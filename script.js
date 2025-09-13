@@ -381,11 +381,43 @@ class EventManager {
 // Application Initialization
 class App {
     static init() {
-        console.log('ChatConnect initialized!');
-        console.log('Try logging in with:');
+        // Initialize database first
+        Database.init();
+        
+        console.log('ChatConnect initialized with persistent storage!');
+        console.log('Try logging in with existing users:');
         console.log('Email: alice@example.com, Password: password123');
         console.log('Email: bob@example.com, Password: password123');
-        console.log('Or create a new account!');
+        console.log('Or create a new account - it will be saved permanently!');
+        console.log('');
+        console.log('Database contains', Database.getUsers().length, 'users');
+        
+        // Add developer console commands
+        window.ChatConnect = {
+            clearData: () => {
+                if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                    Database.clearAllData();
+                    location.reload();
+                }
+            },
+            exportData: () => {
+                const data = Database.exportData();
+                console.log('Exported Data:', data);
+                return data;
+            },
+            showUsers: () => {
+                console.table(Database.getUsers());
+            },
+            showMessages: () => {
+                console.log('Messages:', messages);
+            }
+        };
+        
+        console.log('Developer commands available:');
+        console.log('- ChatConnect.clearData() - Clear all stored data');
+        console.log('- ChatConnect.exportData() - Export all data');
+        console.log('- ChatConnect.showUsers() - Show all users');
+        console.log('- ChatConnect.showMessages() - Show all messages');
         
         EventManager.init();
     }
